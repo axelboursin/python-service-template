@@ -1,0 +1,8 @@
+# Pinned inputs: `devenv update` bumps them, devenv.lock records exact revisions.
+inputs:
+  nixpkgs:
+    url: github:cachix/devenv-nixpkgs/rolling
+{%- if include_terraform %}
+# Terraform is BSL-licensed, which nixpkgs classifies as unfree.
+allowUnfree: true
+{%- endif %}

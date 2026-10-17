@@ -1,0 +1,85 @@
+# Reproducible development environment: same tools, same versions, on every
+# laptop and in CI. Enter it with `devenv shell` (or automatically with direnv).
+{ pkgs, lib, config, ... }:
+
+{
+  packages = [
+    pkgs.git
+    pkgs.jq
+    pkgs.gitleaks
+{%- if include_docker %}
+    pkgs.hadolint
+{%- endif %}
+{%- if include_terraform %}
+    pkgs.tflint
+    pkgs.trivy
+{%- endif %}
+  ];
+
+  env = {
+    PYTHONDONTWRITEBYTECODE = "1";
+    UV_PYTHON_DOWNLOADS = "never"; # use the Nix-provided interpreter only
+  };
+
+  languages.python = {
+    enable = true;
+    package = pkgs.python{{ python_version | replace('.', '') }};
+    uv = {
+      enable = true;
+      sync.enable = true; # `uv sync` on shell entry, venv in .devenv/state
+    };
+  };
+{%- if include_terraform %}
+
+  languages.terraform.enable = true;
+{%- endif %}
+
+  # Git hooks, installed on shell entry (no separate pre-commit install step).
+  git-hooks.hooks = {
+    ruff.enable = true;
+    ruff-format.enable = true;
+    check-toml.enable = true;
+    check-yaml.enable = true;
+    end-of-file-fixer.enable = true;
+    trim-trailing-whitespace.enable = true;
+    check-added-large-files.enable = true;
+    detect-private-keys.enable = true;
+    gitleaks = {
+      enable = true;
+      name = "gitleaks";
+      entry = "${pkgs.gitleaks}/bin/gitleaks protect --staged --redact --no-banner";
+      pass_filenames = false;
+    };
+{%- if include_docker %}
+    hadolint.enable = true;
+{%- endif %}
+{%- if include_terraform %}
+    terraform-format.enable = true;
+    tflint.enable = true;
+{%- endif %}
+  };
+
+  # Project commands, available as plain shell commands inside the env.
+  scripts = {
+    lint.exec = ''
+      ruff check . && ruff format --check . && mypy src
+    '';
+    fmt.exec = ''
+      ruff check --fix . && ruff format .
+    '';
+    tests.exec = ''
+      pytest "$@"
+    '';
+  };
+
+  enterShell = ''
+    echo "{{ project_name }} dev shell: python $(python --version | cut -d' ' -f2), uv $(uv --version | cut -d' ' -f2)"
+    echo "commands: lint, fmt, tests"
+  '';
+
+  # `devenv test`: what CI runs. Hooks + lint + tests in the pinned environment.
+  enterTest = ''
+    lint
+    tests
+  '';
+}

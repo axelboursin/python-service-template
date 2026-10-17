@@ -1,0 +1,38 @@
+# {{ project_name }}
+
+{{ description }}
+
+## Development
+
+The toolchain is pinned with [devenv](https://devenv.sh) (Nix): Python {{ python_version }}, uv, ruff, mypy{% if include_terraform %}, Terraform, TFLint, Trivy{% endif %}{% if include_docker %}, hadolint{% endif %}, gitleaks and the git hooks.
+
+```bash
+devenv shell      # or just `cd` into the folder with direnv installed
+lint              # ruff + mypy
+tests             # pytest
+devenv test       # what CI runs
+```
+
+Without Nix:
+
+```bash
+uv sync
+uv run pytest
+```
+
+## Run
+
+```bash
+uv run {{ project_slug }} Ada
+```
+{%- if include_docker %}
+
+```bash
+docker build -t {{ project_slug }} .
+docker run --rm {{ project_slug }} Ada
+```
+{%- endif %}
+
+## Template
+
+Generated from [python-service-template](https://github.com/axelboursin/python-service-template). Run `copier update` to pull template improvements.

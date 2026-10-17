@@ -1,0 +1,58 @@
+# Copier template for Python services with a reproducible Nix/devenv environment.
+#   copier copy gh:axelboursin/python-service-template my-service
+#   copier update   # pull template improvements into an existing project
+_min_copier_version: "9.4"
+_subdirectory: template
+_answers_file: .copier-answers.yml
+
+project_name:
+  type: str
+  help: Human-readable project name
+  default: My Service
+
+project_slug:
+  type: str
+  help: Repository / distribution name (kebab-case)
+  default: "{{ project_name | lower | replace(' ', '-') }}"
+  validator: >-
+    {% if not (project_slug | regex_search('^[a-z][a-z0-9-]+$')) %}
+    Must be lowercase kebab-case
+    {% endif %}
+
+package_name:
+  type: str
+  help: Python import name (snake_case)
+  default: "{{ project_slug | replace('-', '_') }}"
+  validator: >-
+    {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$')) %}
+    Must be a valid snake_case Python identifier
+    {% endif %}
+
+description:
+  type: str
+  default: A Python service
+
+author_name:
+  type: str
+  default: Axel Boursin
+
+python_version:
+  type: str
+  help: Python version
+  choices: ["3.12", "3.13"]
+  default: "3.12"
+
+include_docker:
+  type: bool
+  help: Add a production Dockerfile (multi-stage, non-root)?
+  default: true
+
+include_terraform:
+  type: bool
+  help: Add a terraform/ folder with Terraform + TFLint in the dev shell?
+  default: false
+
+license:
+  type: str
+  choices: [MIT, Proprietary]
+  default: MIT

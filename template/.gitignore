@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+dist/
+
+# devenv / direnv
+.devenv*
+devenv.local.nix
+.direnv/
+.pre-commit-config.yaml
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+tfplan
+backend.hcl

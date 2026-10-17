@@ -1,0 +1,26 @@
+[project]
+name = "python-service-template"
+version = "0.1.0"
+description = "Copier template: Python service with a reproducible Nix/devenv environment"
+requires-python = ">=3.12"
+
+[dependency-groups]
+dev = [
+    "copier>=9.4",
+    "mypy>=1.13",
+    "pytest>=8",
+    "ruff>=0.8",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["template"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
