@@ -15,7 +15,7 @@ jobs:
     name: Render & check generated projects
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # copier reads template versions from git tags
       - uses: astral-sh/setup-uv@v6
@@ -37,7 +37,7 @@ jobs:
           - name: full
             data: --data include_docker=true --data include_terraform=true --data python_version=3.13
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           path: template
