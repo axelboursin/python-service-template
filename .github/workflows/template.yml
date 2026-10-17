@@ -48,7 +48,7 @@ jobs:
             --data project_name="CI Project" ${{ matrix.data }} template generated
           cd generated && git init -q && git add -A
       - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v16
+      - uses: cachix/cachix-action@v17
         with:
           name: devenv
       - run: nix profile install nixpkgs#devenv
